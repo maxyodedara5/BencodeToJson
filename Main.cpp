@@ -6,7 +6,7 @@
 
 std::string InputFile() {
     std::cout << "Enter the file name :" << std::endl;
-    std::string fileName = "bbb_sunflower.torrent";
+    std::string fileName = "sample.torrent";
     //std::cin >> fileName; 
     //std::cout << fileName << std::endl;
 
@@ -61,10 +61,10 @@ string jsonString   - is current json file created
 bool& isKey         - is to determine if the word is key or value, if key then : needs to be appended 
                       after quotes and if its value then , needs to be appended
 */
-void AddToJSON(std::string toAdd , std::string& jsonString , bool& isKey , bool arrayStart) {
+void AddToJSON(std::string toAdd , std::string& jsonString , bool& isKey , bool listStart) {
     
     // if its inside array only "," needs to added 
-    if (arrayStart == true) {
+    if (listStart == true) {
         jsonString += toAdd;
         jsonString += "\"";
         jsonString += ",";
@@ -86,7 +86,7 @@ void AddToJSON(std::string toAdd , std::string& jsonString , bool& isKey , bool 
         {
             jsonString += toAdd;
             jsonString += "\"";
-            jsonString += ",";
+           // jsonString += ",";
             isKey = true;
             return;
         }
@@ -128,10 +128,14 @@ int main() {
     std::string number; 
     bool iskey = true;
     std::stack<std::string> containerTrack;
-    bool arrayStart = false; 
+    bool listStart = false; 
     while (current != inputLen)
     {
+        if (current == 130) {
+            std::cout << "Here";
+        }
 
+        //words logic 
         if (isdigit(strInput[current])) {
             number = "";
             while (strInput[current] != ':') {
@@ -143,7 +147,7 @@ int main() {
                 std::string word = strInput.substr(current + 1, numberOfLetters);
                 jsonInput += "\""; 
                 
-                AddToJSON(word, jsonInput, iskey , arrayStart);
+                AddToJSON(word, jsonInput, iskey , listStart);
                 //jsonInput += word;
                
                 current += numberOfLetters + 1; 
@@ -172,7 +176,16 @@ int main() {
 
 
         if (strInput[current] == 'd') {
+
+            // }{ handling the , between braces if inside list
+            if (jsonInput!= "" && *(jsonInput.end() - 1) == '}') {
+                jsonInput += ",";
+            }
+
+
             jsonInput += "{";
+            iskey = true;
+            listStart = false; 
             containerTrack.push("{");
             current++;
             continue;
@@ -180,7 +193,7 @@ int main() {
 
         if (strInput[current] == 'l') {
             containerTrack.push("[");
-            arrayStart = true;
+            listStart = true;
             jsonInput += "[";
             current++;
             continue;
@@ -192,7 +205,7 @@ int main() {
                     jsonInput.pop_back();
                 }
                 jsonInput += "]";
-                arrayStart = false; 
+                listStart = false; 
                 containerTrack.pop();
             }
             else
@@ -202,7 +215,7 @@ int main() {
                         jsonInput.pop_back();
                     }
                     jsonInput += "}";
-                    arrayStart = false;
+                    listStart = false;
                     containerTrack.pop();
                 }
             }
