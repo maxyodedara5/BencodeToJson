@@ -2,11 +2,22 @@
 #include <string>
 #include <fstream>
 #include <stack>
+#include <vector>
+#include <sstream>
+#include <iomanip>
 
+
+
+
+inline std::string hex_last_2(const char& c) {
+    std::stringstream ss;
+    ss << std::uppercase << std::setw(2) << std::setfill('0') << std::hex << int{ c };
+    return ss.str().substr(ss.str().size() - 2, ss.str().size());
+}
 
 std::string InputFile() {
     std::cout << "Enter the file name :" << std::endl;
-    std::string fileName = "sample.torrent";
+    std::string fileName = "NameOfInputFile.torrent";
     //std::cin >> fileName; 
     //std::cout << fileName << std::endl;
 
@@ -39,7 +50,7 @@ std::string OutputFile(std::string jsonInput) {
 
     std::string outputFilename;
 
-    std::ofstream outf{ "Torrent.json" };
+    std::ofstream outf{ "OutputTorrent.json" };
 
     // If we couldn't open the output file stream for writing
     if (!outf)
@@ -61,8 +72,30 @@ string jsonString   - is current json file created
 bool& isKey         - is to determine if the word is key or value, if key then : needs to be appended 
                       after quotes and if its value then , needs to be appended
 */
-void AddToJSON(std::string toAdd , std::string& jsonString , bool& isKey , bool listStart) {
+void AddToJSON(std::string& toAdd , std::string& jsonString , bool& isKey , bool listStart , bool& piecesFlag) {
     
+  
+    //pieces logic utf8 encoded symbols converted to hex codes 
+    if (piecesFlag == true) {
+        std::vector<char> bytes(toAdd.begin(), toAdd.end());
+
+        jsonString += "<hex> ";
+        for (size_t i = 0; i < bytes.size(); i++)
+        {
+            jsonString += hex_last_2(bytes[i]) + " ";
+        }
+        jsonString += "</hex>";
+
+        piecesFlag = false;
+        jsonString += "\"";
+        jsonString += ",";
+        isKey = true;
+        return;
+    }
+
+
+
+
     // if its inside array only "," needs to added 
     if (listStart == true) {
         jsonString += toAdd;
@@ -86,11 +119,13 @@ void AddToJSON(std::string toAdd , std::string& jsonString , bool& isKey , bool 
         {
             jsonString += toAdd;
             jsonString += "\"";
-           // jsonString += ",";
+            jsonString += ",";
             isKey = true;
             return;
         }
     }
+
+    
 
    
 }
@@ -129,12 +164,11 @@ int main() {
     bool iskey = true;
     std::stack<std::string> containerTrack;
     bool listStart = false; 
+    bool piecesFlag = false;
     while (current != inputLen)
     {
-        if (current == 130) {
-            std::cout << "Here";
-        }
-
+        
+       // std::cout << current << std::endl;
         //words logic 
         if (isdigit(strInput[current])) {
             number = "";
@@ -145,10 +179,18 @@ int main() {
             if (strInput[current] == ':') {
                 int numberOfLetters = stoi(number);
                 std::string word = strInput.substr(current + 1, numberOfLetters);
+                if (jsonInput != "" && *(jsonInput.end() - 1) == ']') {
+                    jsonInput += ",";
+                }
                 jsonInput += "\""; 
                 
-                AddToJSON(word, jsonInput, iskey , listStart);
+                AddToJSON(word, jsonInput, iskey , listStart , piecesFlag);
                 //jsonInput += word;
+                
+                if (word == "pieces") {
+                  //  std::cout << "here";
+                    piecesFlag = true;
+                }
                
                 current += numberOfLetters + 1; 
             }
