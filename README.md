@@ -28,7 +28,7 @@ int main() {
 }
 ```
 
-You can pass the file name as a string parameter to the JSON, a json file will be created along with the same name for the json. 
+You can pass the file name as a string parameter to the function, a json file will be created with the same name. 
 
 If the file is successfully created the function will return 0. 
 
