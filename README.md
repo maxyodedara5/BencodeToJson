@@ -1,7 +1,7 @@
 # BencodeToJson
  A header only library to convert bencoded (.torrent) files to JSON  
 
- BencodeToJson.h is a single-file, header-only library, you can just copy `include/bencode.hpp` to your destination of choice.
+ BencodeToJson.h is a single-file, header-only library, you can just copy `include/BencodeToJson.h` to your destination of choice.
 
 ## Bencode
 
@@ -25,7 +25,6 @@ Can be used for other text file which are encoded in Bencode.
 int main() {
 
 	int status = BencodeToJson::BencodeToJSON("sample.torrent");
-
 }
 ```
 
