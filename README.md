@@ -10,7 +10,7 @@
 * A list of values is encoded as l<contents>e . The contents consist of the bencoded elements of the list, in order, concatenated. A list consisting of the string "spam" and the number 42 would be encoded as: l4:spami42ee. Note the absence of separators between elements, and the first character is the letter 'l', not digit '1'.
 * A dictionary is encoded as d<contents>e. The elements of the dictionary are encoded with each key immediately followed by its value. All keys must be byte strings and must appear in lexicographical order. A dictionary that associates the values 42 and "spam" with the keys "foo" and "bar", respectively (in other words, {"bar": "spam", "foo": 42}), would be encoded as follows: d3:bar4:spam3:fooi42ee
 
-Source : [Bencode][wikipedia] 
+Sources : [Bencode - wikipedia][wikipedia] , [Bencode Specification][wikispec] , [BitTorrentOrg][bittororg]
 
 # BencodeToJson.h
 
@@ -37,3 +37,5 @@ If the file is successfully created the function will return 0.
 This library is licensed under the [MIT License](LICENSE).
 
 [wikipedia]: https://en.wikipedia.org/wiki/Bencode
+[wikispec]: https://wiki.theory.org/index.php/BitTorrentSpecification#Implementations
+[bittororg]: http://www.bittorrent.org/beps/bep_0003.html
